@@ -1,0 +1,75 @@
+#Bibliotecas
+import tkinter as tk
+import math
+
+#Funções
+
+
+
+#Registra valor na tela
+def clicar(valor):
+    atual = visor.get()
+    if atual == "Erro de sintaxe":
+        visor.delete(0, tk.END)
+        visor.insert(0, str(valor))
+    else:
+        visor.insert(tk.END, str(valor))
+#Apaga valor na tela
+def limpar():
+    visor.delete(0, tk.END)
+#Calcula valor na tela
+def calcular():
+    expressao = visor.get()
+    
+    expressao = expressao.replace('√(', 'math.sqrt(')
+    expressao = expressao.replace('Log(', 'math.log10(')
+    expressao = expressao.replace('^', '**')
+    expressao = expressao.replace('%', '/100')
+    
+    try:
+        resultado = eval(expressao, {"__builtins__": None}, {"math": math})
+        
+        visor.delete(0, tk.END)
+        visor.insert(0, str(resultado))
+    except Exception:
+        visor.delete(0, tk.END)
+        visor.insert(0, "Erro de sintaxe")
+
+
+#Interface
+
+janela = tk.Tk()
+janela.title("Calculadora")
+janela.geometry("400x520")
+janela.config(bg="#f0f0f0")
+
+#Tela
+visor = tk.Entry(janela, font=('Arial', 24), justify='right', bd=10, bg="#e8f4f8")
+visor.grid(row=0, column=0, columnspan=4, ipadx=8, ipady=20, pady=10)
+
+# Estrutura dos botões: (Texto, Linha, Coluna)
+botoes = [
+    ('Log(', 1, 0), ('√(', 1, 1), ('^', 1, 2), ('C', 1, 3),
+    ('1', 2, 0),    ('2', 2, 1),  ('3', 2, 2), ('/', 2, 3),
+    ('4', 3, 0),    ('5', 3, 1),  ('6', 3, 2), ('*', 3, 3),
+    ('7', 4, 0),    ('8', 4, 1),  ('9', 4, 2), ('-', 4, 3),
+    ('.', 5, 0),    ('0', 5, 1),  ('=', 5, 2), ('+', 5, 3),
+    ('(', 6, 0),    (')', 6, 1),               ('%', 6, 3)
+]
+
+# Geração dos botões
+for item in botoes:
+    texto, linha, coluna = item
+    
+    if texto == '=':
+        tk.Button(janela, text=texto, width=5, height=2, font=('Arial', 14, 'bold'), bg="#4caf50", fg="white",
+                  command=calcular).grid(row=linha, column=coluna, padx=2, pady=2)
+    elif texto == 'C':
+        tk.Button(janela, text=texto, width=5, height=2, font=('Arial', 14, 'bold'), bg="#f44336", fg="white",
+                  command=limpar).grid(row=linha, column=coluna, padx=2, pady=2)
+    else:
+        tk.Button(janela, text=texto, width=5, height=2, font=('Arial', 14), bg="#ffffff",
+                  command=lambda t=texto: clicar(t)).grid(row=linha, column=coluna, padx=2, pady=2)
+
+#Loop
+janela.mainloop()
